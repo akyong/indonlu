@@ -8,6 +8,7 @@ import pandas as pd
 import torch
 from torch import optim
 import torch.nn.functional as F
+
 from tqdm import tqdm
 
 from transformers import BertTokenizer, BertConfig, BertForPreTraining
@@ -17,10 +18,13 @@ from modules.multi_label_classification import BertForMultiLabelClassification
 from utils.forward_fn import forward_sequence_multi_classification
 from utils.metrics import absa_metrics_fn
 from utils.data_utils import AspectBasedSentimentAnalysisProsaDataset, AspectBasedSentimentAnalysisDataLoader
+import fasttext
+import torch.nn as nn
 
 
-
-
+class Model(nn.module):
+    def __init__(self):
+        super(Model, self).__init__()
 
 
 
@@ -65,18 +69,17 @@ set_seed(26092020)
 
 
 
-
-
+#
 tokenizer = BertTokenizer.from_pretrained('indobenchmark/indobert-base-p1')
 config = BertConfig.from_pretrained('indobenchmark/indobert-base-p1')
 config.num_labels = max(AspectBasedSentimentAnalysisProsaDataset.NUM_LABELS)
 config.num_labels_list = AspectBasedSentimentAnalysisProsaDataset.NUM_LABELS
-
-# Instantiate model
+#
+#
+#
+# # Instantiate model
 model = BertForMultiLabelClassification.from_pretrained('indobenchmark/indobert-base-p1', config=config)
-
-
-
+# model = fasttext.load_model("/Users/bobbyakyong/Projects/python/indonlu2/model/fasttext-cc-id/cc.id.300_no-oov_absa-prosa_uncased.txt")
 
 
 model
@@ -87,9 +90,13 @@ print(count_param(model))
 #
 # test = './dataset/casa_absa-prosa/vocab.txt'
 # print(test)
-train_dataset_path = './dataset/casa_absa-prosa/train_preprocess.csv'
-valid_dataset_path = './dataset/casa_absa-prosa/valid_preprocess.csv'
-test_dataset_path = './dataset/casa_absa-prosa/test_preprocess_masked_label.csv'
+# train_dataset_path = './dataset/casa_absa-prosa/train_preprocess.csv'
+# valid_dataset_path = './dataset/casa_absa-prosa/valid_preprocess.csv'
+# test_dataset_path = './dataset/casa_absa-prosa/test_preprocess_masked_label.csv'
+
+train_dataset_path = '/Users/bobbyakyong/Projects/python/indonlu2/dataset/casa_absa-prosa/train_preprocess.csv'
+valid_dataset_path = '/Users/bobbyakyong/Projects/python/indonlu2/dataset/casa_absa-prosa/valid_preprocess.csv'
+test_dataset_path = '/Users/bobbyakyong/Projects/python/indonlu2/dataset/casa_absa-prosa/test_preprocess_masked_label.csv'
 
 
 
@@ -104,6 +111,7 @@ test_loader = AspectBasedSentimentAnalysisDataLoader(dataset=test_dataset, max_s
 
 
 w2i, i2w = AspectBasedSentimentAnalysisProsaDataset.LABEL2INDEX, AspectBasedSentimentAnalysisProsaDataset.INDEX2LABEL
+print('w2i, i2w')
 print(w2i)
 print(i2w)
 
